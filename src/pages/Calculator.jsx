@@ -3,19 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import { loadMaterials, calculateMaterials, saveLastQuote, CATEGORIES } from '../store';
 
 const CATEGORY_COLORS = {
-  'פרופילים': 'bg-blue-50 text-blue-700 border-blue-100',
-  'לוחות':    'bg-purple-50 text-purple-700 border-purple-100',
-  'ברגים':    'bg-orange-50 text-orange-700 border-orange-100',
-  'גימור':    'bg-green-50 text-green-700 border-green-100',
-  'אחר':      'bg-slate-50 text-slate-600 border-slate-200',
+  'פרופילים': 'bg-blue-700 text-white border-blue-800',
+  'לוחות':    'bg-indigo-700 text-white border-indigo-800',
+  'ברגים':    'bg-amber-700 text-white border-amber-800',
+  'גימור':    'bg-teal-700 text-white border-teal-800',
+  'אחר':      'bg-zinc-600 text-white border-zinc-700',
 };
 
+const ProfilesIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+    <path d="M2 4h2v12H2V4zm14 0h2v12h-2V4zM6 7h8v2H6V7zm0 4h8v2H6v-2z" />
+  </svg>
+);
+const BoardsIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 1v10h10V5H5zm2 2h6v2H7V7zm0 4h6v2H7v-2z" clipRule="evenodd" />
+  </svg>
+);
+const ScrewsIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+  </svg>
+);
+const FinishIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+);
+const OtherIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+    <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4zM3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+  </svg>
+);
+
 const CATEGORY_ICON = {
-  'פרופילים': '🏗️',
-  'לוחות':    '📋',
-  'ברגים':    '🔩',
-  'גימור':    '✨',
-  'אחר':      '📦',
+  'פרופילים': <ProfilesIcon />,
+  'לוחות':    <BoardsIcon />,
+  'ברגים':    <ScrewsIcon />,
+  'גימור':    <FinishIcon />,
+  'אחר':      <OtherIcon />,
 };
 
 function InputRow({ label, value, onChange, min = 0, step = 0.1, suffix, hint }) {
@@ -25,7 +51,7 @@ function InputRow({ label, value, onChange, min = 0, step = 0.1, suffix, hint })
       <div className="relative flex items-center">
         <input
           type="number"
-          className="input-field"
+          className="input-field font-mono"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           min={min}
@@ -33,35 +59,34 @@ function InputRow({ label, value, onChange, min = 0, step = 0.1, suffix, hint })
           inputMode="decimal"
         />
         {suffix && (
-          <span className="absolute left-4 text-slate-400 text-sm pointer-events-none">
+          <span className="absolute left-3 text-zinc-400 text-xs font-mono pointer-events-none">
             {suffix}
           </span>
         )}
       </div>
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-zinc-400 mt-1 font-mono">{hint}</p>}
     </div>
   );
 }
 
 function ResultCard({ mat }) {
-  const colorClass = CATEGORY_COLORS[mat.category] || CATEGORY_COLORS['אחר'];
-  const icon = CATEGORY_ICON[mat.category] || '📦';
+  const icon = CATEGORY_ICON[mat.category] || <OtherIcon />;
 
   return (
-    <div className="flex items-center justify-between py-3 border-b border-slate-50 last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
       <div className="flex items-center gap-3 min-w-0">
-        <span className="text-xl shrink-0">{icon}</span>
+        <span className="text-zinc-500 shrink-0">{icon}</span>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-800 truncate">{mat.name}</p>
+          <p className="text-sm font-semibold text-zinc-900 truncate">{mat.name}</p>
           {mat.notes && (
-            <p className="text-xs text-slate-400 mt-0.5 truncate">{mat.notes}</p>
+            <p className="text-xs text-zinc-400 mt-0.5 truncate font-mono">{mat.notes}</p>
           )}
-          <p className="text-xs text-slate-400">בסיס חישוב: {mat.base}</p>
+          <p className="text-xs text-zinc-400 font-mono">בסיס: {mat.base}</p>
         </div>
       </div>
       <div className="text-left shrink-0 mr-3">
-        <p className="text-xl font-bold text-brand-800 tabular-nums">{mat.quantity.toLocaleString('he-IL')}</p>
-        <p className="text-xs text-slate-500 text-left">{mat.unit}</p>
+        <p className="text-xl font-bold text-brand-800 tabular-nums font-mono">{mat.quantity.toLocaleString('he-IL')}</p>
+        <p className="text-xs text-zinc-500 text-left font-mono">{mat.unit}</p>
       </div>
     </div>
   );
@@ -113,15 +138,15 @@ export default function Calculator() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-brand-900">מחשבון מחיצות</h1>
-        <p className="text-sm text-slate-500 mt-1">הכנס מידות הפרויקט לחישוב חומרים</p>
+      <div className="mb-4 pb-3 border-b border-zinc-300">
+        <h1 className="text-lg font-bold text-zinc-900 tracking-tight uppercase">מחשבון מחיצות</h1>
+        <p className="text-xs text-zinc-500 mt-0.5 font-mono">הזן מידות הפרויקט לחישוב כמויות חומרים</p>
       </div>
 
       {!calculated ? (
         <>
           {/* Project name */}
-          <div className="card mb-4">
+          <div className="card mb-3">
             <p className="section-title">פרטי פרויקט</p>
             <div>
               <label className="label">שם הפרויקט (אופציונלי)</label>
@@ -136,11 +161,11 @@ export default function Calculator() {
           </div>
 
           {/* Dimensions */}
-          <div className="card mb-4 space-y-4">
+          <div className="card mb-3 space-y-4">
             <p className="section-title">מידות המחיצה</p>
 
             <InputRow
-              label="אורך המחיצה (מ׳)"
+              label='אורך המחיצה (מ"ל)'
               value={length}
               onChange={setLength}
               min={0.1}
@@ -148,59 +173,59 @@ export default function Calculator() {
               suffix='מ"ל'
             />
             <InputRow
-              label="גובה המחיצה (מ׳)"
+              label='גובה המחיצה (מ")'
               value={height}
               onChange={setHeight}
               min={0.5}
               step={0.05}
               suffix='מ"'
-              hint="גובה תקרה סטנדרטי: 2.6 מ׳"
+              hint='גובה תקרה סטנדרטי: 2.60 מ׳'
             />
 
             {/* Area preview */}
-            <div className="bg-brand-50 rounded-xl p-3 flex justify-between items-center">
-              <span className="text-sm text-brand-700 font-medium">שטח המחיצה</span>
-              <span className="text-lg font-bold text-brand-800">{area.toFixed(2)} מ"ר</span>
+            <div className="bg-zinc-100 border border-zinc-300 rounded-md p-3 flex justify-between items-center">
+              <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wide">שטח המחיצה</span>
+              <span className="text-base font-bold text-zinc-900 font-mono tabular-nums">{area.toFixed(2)} מ"ר</span>
             </div>
           </div>
 
           {/* Cladding type */}
-          <div className="card mb-4">
+          <div className="card mb-3">
             <p className="section-title">סוג ציפוי</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setDoubleSided(false)}
-                className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-colors ${
+                className={`py-2.5 px-3 rounded-md text-xs font-semibold border-2 uppercase tracking-wide transition-colors ${
                   !doubleSided
-                    ? 'border-brand-600 bg-brand-50 text-brand-800'
-                    : 'border-slate-200 bg-white text-slate-600'
+                    ? 'border-brand-700 bg-brand-800 text-white'
+                    : 'border-zinc-300 bg-white text-zinc-600'
                 }`}
               >
                 חד-צדדי
-                <span className="block text-xs font-normal mt-0.5 opacity-70">גבס מצד אחד</span>
+                <span className="block text-xs font-normal mt-0.5 opacity-70 normal-case tracking-normal">גבס מצד אחד</span>
               </button>
               <button
                 onClick={() => setDoubleSided(true)}
-                className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-colors ${
+                className={`py-2.5 px-3 rounded-md text-xs font-semibold border-2 uppercase tracking-wide transition-colors ${
                   doubleSided
-                    ? 'border-brand-600 bg-brand-50 text-brand-800'
-                    : 'border-slate-200 bg-white text-slate-600'
+                    ? 'border-brand-700 bg-brand-800 text-white'
+                    : 'border-zinc-300 bg-white text-zinc-600'
                 }`}
               >
                 דו-צדדי
-                <span className="block text-xs font-normal mt-0.5 opacity-70">גבס משני הצדדים</span>
+                <span className="block text-xs font-normal mt-0.5 opacity-70 normal-case tracking-normal">גבס משני הצדדים</span>
               </button>
             </div>
           </div>
 
           {/* Doors */}
-          <div className="card mb-6">
+          <div className="card mb-4">
             <div className="flex items-center justify-between mb-3">
               <p className="section-title mb-0">פתחי דלתות</p>
               <button
                 onClick={() => { setShowDoors(!showDoors); if (showDoors) setNumDoors(0); }}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${
-                  showDoors ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-600'
+                className={`text-xs font-semibold px-3 py-1.5 rounded-md uppercase tracking-wide transition-colors border ${
+                  showDoors ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-zinc-600 border-zinc-300'
                 }`}
               >
                 {showDoors ? 'ביטול' : '+ הוסף דלתות'}
@@ -215,14 +240,14 @@ export default function Calculator() {
                   onChange={setNumDoors}
                   min={0}
                   step={1}
-                  suffix="דלתות"
+                  suffix="יח'"
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="label">רוחב דלת (מ׳)</label>
                     <input
                       type="number"
-                      className="input-field"
+                      className="input-field font-mono"
                       value={doorWidth}
                       onChange={(e) => setDoorWidth(Number(e.target.value))}
                       min={0.5}
@@ -234,7 +259,7 @@ export default function Calculator() {
                     <label className="label">גובה דלת (מ׳)</label>
                     <input
                       type="number"
-                      className="input-field"
+                      className="input-field font-mono"
                       value={doorHeight}
                       onChange={(e) => setDoorHeight(Number(e.target.value))}
                       min={1}
@@ -244,9 +269,9 @@ export default function Calculator() {
                   </div>
                 </div>
                 {numDoors > 0 && (
-                  <div className="bg-amber-50 rounded-xl p-3 flex justify-between text-sm">
-                    <span className="text-amber-700">שטח פתחים</span>
-                    <span className="font-bold text-amber-800">
+                  <div className="bg-amber-50 border border-amber-300 rounded-md p-3 flex justify-between text-sm">
+                    <span className="text-xs font-semibold text-amber-800 uppercase tracking-wide">שטח פתחים</span>
+                    <span className="font-bold text-amber-900 font-mono tabular-nums">
                       {(numDoors * doorWidth * doorHeight).toFixed(2)} מ"ר
                     </span>
                   </div>
@@ -256,51 +281,51 @@ export default function Calculator() {
           </div>
 
           {/* Summary before calc */}
-          <div className="card mb-5 bg-brand-900 text-white">
-            <p className="text-xs text-brand-200 font-medium mb-2">סיכום לחישוב</p>
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-sm">
-                <span className="text-brand-300">אורך מחיצה</span>
-                <span className="font-semibold">{length} מ"ל</span>
+          <div className="card mb-4 bg-[#0f1b2d] text-white border-[#1e3050]">
+            <p className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-widest mb-3">סיכום לחישוב</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm border-b border-[#1e3050] pb-2">
+                <span className="text-xs text-zinc-400 uppercase tracking-wide">אורך מחיצה</span>
+                <span className="font-bold font-mono tabular-nums">{length} מ"ל</span>
+              </div>
+              <div className="flex justify-between text-sm border-b border-[#1e3050] pb-2">
+                <span className="text-xs text-zinc-400 uppercase tracking-wide">שטח נטו</span>
+                <span className="font-bold font-mono tabular-nums">{area.toFixed(2)} מ"ר</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-brand-300">שטח נטו</span>
-                <span className="font-semibold">{area.toFixed(2)} מ"ר</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-brand-300">שטח לחישוב לוחות</span>
-                <span className="font-semibold">{effectiveArea.toFixed(2)} מ"ר {doubleSided ? '(דו-צ׳)' : ''}</span>
+                <span className="text-xs text-zinc-400 uppercase tracking-wide">שטח לחישוב לוחות</span>
+                <span className="font-bold font-mono tabular-nums">{effectiveArea.toFixed(2)} מ"ר {doubleSided ? '(דו-צ׳)' : ''}</span>
               </div>
             </div>
           </div>
 
           <button className="btn-primary" onClick={handleCalculate}>
-            חשב חומרים
+            חשב כמויות חומרים
           </button>
         </>
       ) : (
         <>
           {/* Results header */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-300">
             <div>
-              <h2 className="text-lg font-bold text-brand-900">
+              <h2 className="text-base font-bold text-zinc-900 uppercase tracking-tight">
                 {projectName || 'תוצאות חישוב'}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-zinc-500 mt-0.5 font-mono">
                 {length} מ"ל × {height} מ׳ | {area.toFixed(1)} מ"ר
               </p>
             </div>
-            <button onClick={handleReset} className="btn-secondary text-sm px-4 py-2">
+            <button onClick={handleReset} className="btn-secondary text-xs px-4 py-2">
               חישוב חדש
             </button>
           </div>
 
-          {/* Quote CTA – prominent, top of results */}
+          {/* Quote CTA */}
           <button
             onClick={() => navigate('/quote')}
-            className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold rounded-xl px-6 py-4 text-base transition-colors shadow mb-3"
+            className="w-full flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold rounded-md px-6 py-3.5 text-sm uppercase tracking-wide transition-colors border border-amber-700 mb-2"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
             </svg>
             הפק הצעת מחיר ללקוח
@@ -309,24 +334,24 @@ export default function Calculator() {
           {/* CNC Spec CTA */}
           <button
             onClick={() => navigate('/cnc')}
-            className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-bold rounded-xl px-6 py-4 text-base transition-colors shadow mb-4"
+            className="w-full flex items-center justify-center gap-2 bg-brand-800 hover:bg-brand-900 text-white font-bold rounded-md px-6 py-3.5 text-sm uppercase tracking-wide transition-colors border border-brand-900 mb-4"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
             </svg>
             הפק מפרט חיתוך CNC
           </button>
 
           {/* Category filter */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+          <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-hide">
             {usedCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                className={`shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md border uppercase tracking-wide transition-colors ${
                   activeCategory === cat
-                    ? 'bg-brand-700 text-white border-brand-700'
-                    : 'bg-white text-slate-600 border-slate-200'
+                    ? 'bg-brand-800 text-white border-brand-800'
+                    : 'bg-white text-zinc-600 border-zinc-300'
                 }`}
               >
                 {cat}
@@ -339,9 +364,9 @@ export default function Calculator() {
             const items = filteredResults.filter((r) => r.category === cat);
             return (
               <div key={cat} className="card mb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <span>{CATEGORY_ICON[cat]}</span>
-                  <p className="text-sm font-semibold text-slate-700">{cat}</p>
+                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-zinc-200">
+                  <span className="text-zinc-500">{CATEGORY_ICON[cat]}</span>
+                  <p className="text-xs font-bold text-zinc-700 uppercase tracking-wide">{cat}</p>
                   <span className={`badge border ${CATEGORY_COLORS[cat]}`}>{items.length} פריטים</span>
                 </div>
                 <div>
@@ -352,10 +377,10 @@ export default function Calculator() {
           })}
 
           {/* Summary */}
-          <div className="card mt-4 bg-slate-800 text-white">
-            <p className="text-xs text-slate-400 font-medium mb-2">סיכום כולל</p>
-            <p className="text-sm text-slate-300">{results.length} סוגי חומרים לפרויקט</p>
-            <p className="text-xs text-slate-500 mt-2">
+          <div className="card mt-4 bg-[#0f1b2d] text-white border-[#1e3050]">
+            <p className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-widest mb-2">סיכום כולל</p>
+            <p className="text-sm text-zinc-300 font-mono">{results.length} סוגי חומרים לפרויקט</p>
+            <p className="text-xs text-zinc-500 mt-2 font-mono">
               * הכמויות כוללות אחוז בזבוז מקובל בהתאם להגדרות האדמין
             </p>
           </div>
@@ -364,3 +389,4 @@ export default function Calculator() {
     </div>
   );
 }
+

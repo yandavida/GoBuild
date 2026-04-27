@@ -8,17 +8,17 @@ import CNCSpec from './pages/CNCSpec';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-svh bg-slate-100 flex flex-col">
-        <header className="sticky top-0 z-40 bg-brand-900 text-white shadow-md">
-          <div className="max-w-lg mx-auto flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center shrink-0">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-brand-900">
+      <div className="min-h-svh bg-[#e8ecf1] flex flex-col">
+        <header className="sticky top-0 z-40 bg-[#0f1b2d] text-white border-b border-[#1e3050]">
+          <div className="max-w-lg mx-auto flex items-center gap-3 px-4 py-2.5">
+            <div className="w-7 h-7 bg-amber-500 flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#0f1b2d]">
                 <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
               </svg>
             </div>
-            <div>
-              <h1 className="text-base font-bold leading-none tracking-wide">GoBuild</h1>
-              <p className="text-xs text-brand-200 mt-0.5">מחשבון מחיצות גבס</p>
+            <div className="flex items-baseline gap-2">
+              <h1 className="text-sm font-bold tracking-widest uppercase">GoBuild</h1>
+              <span className="text-xs text-zinc-400 font-mono">מחשבון מחיצות גבס</span>
             </div>
           </div>
         </header>
