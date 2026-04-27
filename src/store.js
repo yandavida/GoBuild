@@ -9,6 +9,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'linear',
     unit: 'מ"ל',
     notes: 'עליונה + תחתונה',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   {
     id: 'm2',
@@ -18,6 +21,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'linear',
     unit: 'יחידות',
     notes: 'ריווח 60 ס"מ',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   {
     id: 'm3',
@@ -27,6 +33,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'linear',
     unit: 'מ"ל',
     notes: 'לפינות',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   // --- Boards (per 100 m²) ---
   {
@@ -37,6 +46,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'לוחות',
     notes: 'כולל 10% בזבוז',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   // --- Screws (per 100 m²) ---
   {
@@ -47,6 +59,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'ברגים',
     notes: 'מ"מ 3.5×25',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   {
     id: 'm6',
@@ -56,6 +71,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'linear',
     unit: 'ברגים',
     notes: 'מ"מ 4.2×13',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   // --- Finishing (per 100 m²) ---
   {
@@ -66,6 +84,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'מ"ל',
     notes: 'לתפרים ופינות',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   {
     id: 'm8',
@@ -75,6 +96,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'ק"ג',
     notes: 'לגימור תפרים',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   {
     id: 'm9',
@@ -84,6 +108,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'מ"ל',
     notes: 'לפינות חיצוניות',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
   // --- Other (per 100 m²) ---
   {
@@ -94,6 +121,9 @@ export const DEFAULT_MATERIALS = [
     basedOn: 'area',
     unit: 'מ"ר',
     notes: 'אופציונלי',
+    costPrice: 0,
+    markupPercent: 0,
+    installationPrice: 0,
   },
 ];
 
@@ -102,7 +132,16 @@ const STORAGE_KEY = 'gobuild_materials';
 export function loadMaterials() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Migrate older records that lack price fields
+      return parsed.map((m) => ({
+        costPrice: 0,
+        markupPercent: 0,
+        installationPrice: 0,
+        ...m,
+      }));
+    }
   } catch {}
   return DEFAULT_MATERIALS;
 }
@@ -116,7 +155,7 @@ export function resetMaterials() {
   return DEFAULT_MATERIALS;
 }
 
-// Calculate quantities for a project
+// Calculate quantities (and prices) for a project
 export function calculateMaterials(materials, { length, height, numDoors, doorWidth, doorHeight, doubleSided }) {
   const linearMeters = length;
   const wallArea = Math.max(0, length * height - numDoors * doorWidth * doorHeight);
@@ -126,9 +165,24 @@ export function calculateMaterials(materials, { length, height, numDoors, doorWi
     const base = mat.basedOn === 'linear' ? linearMeters : effectiveArea;
     const raw = (base / 100) * mat.quantityPer100;
     const quantity = Math.ceil(raw);
-    return { ...mat, quantity, base: mat.basedOn === 'linear' ? `${linearMeters.toFixed(1)} מ"ל` : `${effectiveArea.toFixed(1)} מ"ר` };
+
+    const clientUnitPrice = mat.costPrice * (1 + (mat.markupPercent || 0) / 100);
+    const totalMaterialCost = quantity * clientUnitPrice;
+    const totalInstallationCost = quantity * (mat.installationPrice || 0);
+
+    return {
+      ...mat,
+      quantity,
+      base: mat.basedOn === 'linear' ? `${linearMeters.toFixed(1)} מ"ל` : `${effectiveArea.toFixed(1)} מ"ר`,
+      clientUnitPrice,
+      totalMaterialCost,
+      totalInstallationCost,
+      lineTotal: totalMaterialCost + totalInstallationCost,
+    };
   });
 }
 
 export const CATEGORIES = ['פרופילים', 'לוחות', 'ברגים', 'גימור', 'אחר'];
 export const UNITS = ['מ"ל', 'מ"ר', 'יחידות', 'לוחות', 'ברגים', 'ק"ג', 'גליל', 'שקית'];
+
+export const VAT_RATE = 0.18;
