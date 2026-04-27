@@ -7,6 +7,16 @@ const CalcIcon = () => (
   </svg>
 );
 
+const QuoteIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+);
+
 const AdminIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
     <circle cx="12" cy="12" r="3" />
@@ -15,42 +25,37 @@ const AdminIcon = () => (
   </svg>
 );
 
+const TABS = [
+  { to: '/',      label: 'מחשבון', Icon: CalcIcon,  end: true },
+  { to: '/quote', label: 'הצעת מחיר', Icon: QuoteIcon, end: false },
+  { to: '/admin', label: 'הגדרות', Icon: AdminIcon, end: false },
+];
+
 export default function NavBar() {
-  const base = 'flex flex-col items-center gap-1 px-8 py-2 text-xs font-medium transition-colors duration-150';
-  const active = 'text-brand-700';
-  const inactive = 'text-slate-400';
+  const base = 'flex flex-col items-center gap-1 flex-1 py-2 text-xs font-medium transition-colors duration-150';
 
   return (
-    <nav className="fixed bottom-0 right-0 left-0 z-50 bg-white border-t border-slate-200 flex justify-around safe-bottom">
-      <div className="max-w-lg w-full mx-auto flex justify-around">
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => `${base} ${isActive ? active : inactive}`}
-        >
-          {({ isActive }) => (
-            <>
-              <span className={`p-1.5 rounded-xl ${isActive ? 'bg-brand-50' : ''}`}>
-                <CalcIcon />
-              </span>
-              <span>מחשבון</span>
-            </>
-          )}
-        </NavLink>
-
-        <NavLink
-          to="/admin"
-          className={({ isActive }) => `${base} ${isActive ? active : inactive}`}
-        >
-          {({ isActive }) => (
-            <>
-              <span className={`p-1.5 rounded-xl ${isActive ? 'bg-brand-50' : ''}`}>
-                <AdminIcon />
-              </span>
-              <span>הגדרות</span>
-            </>
-          )}
-        </NavLink>
+    <nav className="fixed bottom-0 right-0 left-0 z-50 bg-white border-t border-slate-200">
+      <div className="max-w-lg w-full mx-auto flex">
+        {TABS.map(({ to, label, Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              `${base} ${isActive ? 'text-brand-700' : 'text-slate-400'}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <span className={`p-1.5 rounded-xl ${isActive ? 'bg-brand-50' : ''}`}>
+                  <Icon />
+                </span>
+                <span>{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
       </div>
     </nav>
   );

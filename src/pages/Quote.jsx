@@ -1,5 +1,6 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { VAT_RATE } from '../store';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loadLastQuote, VAT_RATE } from '../store';
 
 const fmt = (n) =>
   n.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -8,7 +9,7 @@ function QuoteRow({ mat, index }) {
   const hasPrice = mat.costPrice > 0 || mat.installationPrice > 0;
 
   return (
-    <div className={`py-3 border-b border-slate-100 last:border-0 ${!hasPrice ? 'opacity-50' : ''}`}>
+    <div className={`py-3 border-b border-slate-100 last:border-0 ${!hasPrice ? 'opacity-40' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -27,7 +28,6 @@ function QuoteRow({ mat, index }) {
         </div>
       </div>
 
-      {/* Price breakdown */}
       {hasPrice && (
         <div className="mt-2 pr-7 grid grid-cols-3 gap-1 text-xs">
           <div className="bg-slate-50 rounded-lg p-2 text-center">
@@ -92,16 +92,17 @@ function TotalsCard({ results, includeVat }) {
 }
 
 export default function Quote() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state;
+  const saved = loadLastQuote();
 
-  if (!state?.results) {
+  const [includeVat, setIncludeVat] = useState(saved?.includeVat ?? true);
+
+  if (!saved) {
     return (
-      <div className="page-container flex flex-col items-center justify-center min-h-64 text-center">
-        <p className="text-4xl mb-4">📄</p>
-        <p className="text-slate-600 font-medium mb-2">אין נתונים להצגה</p>
-        <p className="text-sm text-slate-400 mb-6">יש לחשב פרויקט תחילה</p>
+      <div className="page-container flex flex-col items-center justify-center min-h-64 text-center pt-16">
+        <p className="text-5xl mb-4">📄</p>
+        <p className="text-slate-700 font-semibold mb-2">אין הצעת מחיר עדיין</p>
+        <p className="text-sm text-slate-400 mb-8">יש לחשב פרויקט תחילה ואז תוכן ההצעה יופיע כאן</p>
         <button onClick={() => navigate('/')} className="btn-primary max-w-xs">
           עבור למחשבון
         </button>
@@ -109,31 +110,16 @@ export default function Quote() {
     );
   }
 
-  const {
-    results,
-    projectName,
-    length,
-    height,
-    area,
-    doubleSided,
-    includeVat,
-    setIncludeVat,
-  } = state;
-
-  const pricedResults = results.filter((r) => r.costPrice > 0 || r.installationPrice > 0);
-  const unpricedCount = results.length - pricedResults.length;
+  const { results, projectName, length, height, area, doubleSided } = saved;
+  const unpricedCount = results.filter((r) => r.costPrice === 0 && r.installationPrice === 0).length;
   const today = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  function handlePrint() {
-    window.print();
-  }
 
   return (
     <div className="page-container">
-      {/* Back button + actions */}
+      {/* Actions bar */}
       <div className="flex items-center justify-between mb-5">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
           className="flex items-center gap-1.5 text-sm text-brand-700 font-medium"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 rotate-180">
@@ -143,7 +129,7 @@ export default function Quote() {
         </button>
 
         <button
-          onClick={handlePrint}
+          onClick={() => window.print()}
           className="flex items-center gap-1.5 bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-xl"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -153,7 +139,7 @@ export default function Quote() {
         </button>
       </div>
 
-      {/* Quote header card */}
+      {/* Quote header */}
       <div className="card mb-4 bg-brand-900 text-white">
         <div className="flex items-start justify-between">
           <div>
@@ -173,7 +159,9 @@ export default function Quote() {
           <div className="text-left">
             <p className="text-xs text-brand-300">פרטי פרויקט</p>
             <p className="text-sm font-medium mt-1">{length} מ"ל × {height} מ׳</p>
-            <p className="text-xs text-brand-300 mt-0.5">{area.toFixed(1)} מ"ר {doubleSided ? '(דו-צדדי)' : '(חד-צדדי)'}</p>
+            <p className="text-xs text-brand-300 mt-0.5">
+              {area.toFixed(1)} מ"ר {doubleSided ? '(דו-צדדי)' : '(חד-צדדי)'}
+            </p>
           </div>
         </div>
       </div>
@@ -181,10 +169,9 @@ export default function Quote() {
       {/* Unpriced warning */}
       {unpricedCount > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
-          <span className="text-amber-500 mt-0.5">⚠️</span>
+          <span className="text-amber-500 mt-0.5 shrink-0">⚠️</span>
           <p className="text-xs text-amber-700">
-            {unpricedCount} חומרים ללא מחיר לא נכללים בסיכום הכספי.
-            ניתן להגדיר מחירים בעמוד ההגדרות.
+            {unpricedCount} חומרים ללא מחיר לא נכללים בסיכום. ניתן להגדיר מחירים בעמוד ההגדרות.
           </p>
         </div>
       )}
@@ -205,12 +192,10 @@ export default function Quote() {
             <p className="text-xs text-slate-400 mt-0.5">הוספת מע"מ לסיכום הסופי</p>
           </div>
           <button
-            onClick={() => navigate('.', { state: { ...state, includeVat: !includeVat }, replace: true })}
+            onClick={() => setIncludeVat((v) => !v)}
             className={`relative w-12 h-6 rounded-full transition-colors ${includeVat ? 'bg-brand-600' : 'bg-slate-200'}`}
           >
-            <span
-              className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${includeVat ? 'right-1' : 'left-1'}`}
-            />
+            <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${includeVat ? 'right-1' : 'left-1'}`} />
           </button>
         </div>
       </div>
@@ -221,7 +206,6 @@ export default function Quote() {
         <TotalsCard results={results} includeVat={includeVat} />
       </div>
 
-      {/* Footer note */}
       <p className="text-xs text-center text-slate-400 mt-2 mb-4">
         הצעת מחיר זו תקפה ל-30 יום מתאריך ההפקה
       </p>

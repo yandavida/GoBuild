@@ -128,6 +128,19 @@ export const DEFAULT_MATERIALS = [
 ];
 
 const STORAGE_KEY = 'gobuild_materials';
+const QUOTE_KEY = 'gobuild_last_quote';
+
+export function saveLastQuote(data) {
+  localStorage.setItem(QUOTE_KEY, JSON.stringify(data));
+}
+
+export function loadLastQuote() {
+  try {
+    const raw = localStorage.getItem(QUOTE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
 
 export function loadMaterials() {
   try {

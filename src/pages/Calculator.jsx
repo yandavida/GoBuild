@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadMaterials, calculateMaterials, CATEGORIES } from '../store';
+import { loadMaterials, calculateMaterials, saveLastQuote, CATEGORIES } from '../store';
 
 const CATEGORY_COLORS = {
   'פרופילים': 'bg-blue-50 text-blue-700 border-blue-100',
@@ -95,6 +95,7 @@ export default function Calculator() {
     });
     setResults(res);
     setCalculated(true);
+    saveLastQuote({ results: res, projectName, length, height, area, doubleSided, includeVat: true });
   }
 
   function handleReset() {
@@ -279,8 +280,8 @@ export default function Calculator() {
         </>
       ) : (
         <>
-          {/* Results */}
-          <div className="flex items-center justify-between mb-4">
+          {/* Results header */}
+          <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-lg font-bold text-brand-900">
                 {projectName || 'תוצאות חישוב'}
@@ -293,6 +294,17 @@ export default function Calculator() {
               חישוב חדש
             </button>
           </div>
+
+          {/* Quote CTA – prominent, top of results */}
+          <button
+            onClick={() => navigate('/quote')}
+            className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold rounded-xl px-6 py-4 text-base transition-colors shadow mb-4"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+            </svg>
+            הפק הצעת מחיר ללקוח
+          </button>
 
           {/* Category filter */}
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
@@ -328,36 +340,14 @@ export default function Calculator() {
             );
           })}
 
-          {/* Summary + Quote CTA */}
-          <div className="card mt-4 bg-slate-800 text-white mb-3">
+          {/* Summary */}
+          <div className="card mt-4 bg-slate-800 text-white">
             <p className="text-xs text-slate-400 font-medium mb-2">סיכום כולל</p>
             <p className="text-sm text-slate-300">{results.length} סוגי חומרים לפרויקט</p>
             <p className="text-xs text-slate-500 mt-2">
               * הכמויות כוללות אחוז בזבוז מקובל בהתאם להגדרות האדמין
             </p>
           </div>
-
-          <button
-            onClick={() =>
-              navigate('/quote', {
-                state: {
-                  results,
-                  projectName,
-                  length,
-                  height,
-                  area,
-                  doubleSided,
-                  includeVat: true,
-                },
-              })
-            }
-            className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold rounded-xl px-6 py-4 text-base transition-colors shadow-sm"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-            </svg>
-            הפק הצעת מחיר ללקוח
-          </button>
         </>
       )}
     </div>
