@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { loadMaterials, saveMaterials, resetMaterials, CATEGORIES, UNITS } from '../store';
 
 const CATEGORY_COLORS = {
-  'פרופילים': 'bg-blue-100 text-blue-700',
-  'לוחות':    'bg-purple-100 text-purple-700',
-  'ברגים':    'bg-orange-100 text-orange-700',
-  'גימור':    'bg-green-100 text-green-700',
-  'אחר':      'bg-slate-100 text-slate-600',
+  'פרופילים': 'bg-blue-700 text-white',
+  'לוחות':    'bg-indigo-700 text-white',
+  'ברגים':    'bg-amber-700 text-white',
+  'גימור':    'bg-teal-700 text-white',
+  'אחר':      'bg-zinc-600 text-white',
 };
 
 const EMPTY_MATERIAL = {
@@ -33,7 +33,7 @@ function PriceInput({ label, value, onChange, suffix, hint }) {
       <div className="relative flex items-center">
         <input
           type="number"
-          className="input-field"
+          className="input-field font-mono"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           min={0}
@@ -42,10 +42,10 @@ function PriceInput({ label, value, onChange, suffix, hint }) {
           placeholder="0"
         />
         {suffix && (
-          <span className="absolute left-4 text-slate-400 text-sm pointer-events-none">{suffix}</span>
+          <span className="absolute left-3 text-zinc-400 text-xs font-mono pointer-events-none">{suffix}</span>
         )}
       </div>
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-zinc-400 mt-1 font-mono">{hint}</p>}
     </div>
   );
 }
@@ -119,10 +119,10 @@ function MaterialForm({ initial, onSave, onCancel }) {
               key={mode}
               type="button"
               onClick={() => set('basedOn', mode)}
-              className={`py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-colors text-center ${
+              className={`py-2.5 px-3 rounded-md text-xs font-semibold border-2 uppercase tracking-wide transition-colors text-center ${
                 form.basedOn === mode
-                  ? 'border-brand-600 bg-brand-50 text-brand-800'
-                  : 'border-slate-200 bg-white text-slate-600'
+                  ? 'border-brand-700 bg-brand-800 text-white'
+                  : 'border-zinc-300 bg-white text-zinc-600'
               }`}
             >
               {mode === 'linear' ? 'לכל 100 מ"ל' : 'לכל 100 מ"ר'}
@@ -155,7 +155,7 @@ function MaterialForm({ initial, onSave, onCancel }) {
       </div>
 
       {/* ── Pricing section ── */}
-      <div className="border-t border-slate-100 pt-4">
+      <div className="border-t border-zinc-200 pt-4">
         <p className="section-title mb-3">תמחור</p>
 
         <div className="space-y-3">
@@ -176,9 +176,9 @@ function MaterialForm({ initial, onSave, onCancel }) {
 
           {/* Derived client price preview */}
           {clientUnitPrice !== null && clientUnitPrice > 0 && (
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex justify-between items-center">
-              <span className="text-sm text-amber-700">מחיר ללקוח (ליחידה)</span>
-              <span className="text-base font-bold text-amber-800">
+            <div className="bg-amber-50 border border-amber-300 rounded-md px-3 py-2.5 flex justify-between items-center">
+              <span className="text-xs font-semibold text-amber-800 uppercase tracking-wide">מחיר ללקוח (ליחידה)</span>
+              <span className="text-sm font-bold text-amber-900 font-mono tabular-nums">
                 ₪{clientUnitPrice.toFixed(2)}
               </span>
             </div>
@@ -222,16 +222,16 @@ function MaterialRow({ mat, onEdit, onDelete }) {
   const hasPricing = mat.costPrice > 0;
 
   return (
-    <div className="py-3 border-b border-slate-50 last:border-0">
+    <div className="py-3 border-b border-zinc-100 last:border-0">
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-medium text-slate-800">{mat.name}</p>
+            <p className="text-sm font-semibold text-zinc-900">{mat.name}</p>
             <span className={`badge text-xs ${CATEGORY_COLORS[mat.category] || ''}`}>
               {mat.category}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-zinc-500 mt-0.5 font-mono">
             {mat.quantityPer100} {mat.unit} / 100 {mat.basedOn === 'linear' ? 'מ"ל' : 'מ"ר'}
             {mat.notes && ` · ${mat.notes}`}
           </p>
@@ -239,29 +239,29 @@ function MaterialRow({ mat, onEdit, onDelete }) {
           {/* Pricing chips */}
           {hasPricing ? (
             <div className="flex flex-wrap gap-1.5 mt-1.5">
-              <span className="text-xs bg-slate-100 text-slate-600 rounded-md px-2 py-0.5">
+              <span className="text-xs bg-zinc-100 text-zinc-700 border border-zinc-200 rounded px-2 py-0.5 font-mono">
                 עלות ₪{mat.costPrice.toFixed(2)}
               </span>
               {mat.markupPercent > 0 && (
-                <span className="text-xs bg-slate-100 text-slate-600 rounded-md px-2 py-0.5">
+                <span className="text-xs bg-zinc-100 text-zinc-700 border border-zinc-200 rounded px-2 py-0.5 font-mono">
                   +{mat.markupPercent}% → ₪{clientPrice.toFixed(2)}
                 </span>
               )}
               {mat.installationPrice > 0 && (
-                <span className="text-xs bg-blue-50 text-blue-600 rounded-md px-2 py-0.5">
+                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded px-2 py-0.5 font-mono">
                   התקנה ₪{mat.installationPrice.toFixed(2)}
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-xs text-slate-300 mt-1 block">ללא תמחור</span>
+            <span className="text-xs text-zinc-300 mt-1 block font-mono">ללא תמחור</span>
           )}
         </div>
 
-        <div className="flex gap-2 shrink-0 mt-0.5">
+        <div className="flex gap-1 shrink-0 mt-0.5">
           <button
             onClick={() => onEdit(mat)}
-            className="text-brand-600 hover:bg-brand-50 p-2 rounded-lg transition-colors"
+            className="text-brand-700 hover:bg-brand-50 p-2 rounded transition-colors border border-transparent hover:border-brand-200"
             aria-label="עריכה"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -270,7 +270,7 @@ function MaterialRow({ mat, onEdit, onDelete }) {
           </button>
           <button
             onClick={() => onDelete(mat.id)}
-            className="text-red-400 hover:bg-red-50 p-2 rounded-lg transition-colors"
+            className="text-red-500 hover:bg-red-50 p-2 rounded transition-colors border border-transparent hover:border-red-200"
             aria-label="מחיקה"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -329,14 +329,14 @@ export default function Admin() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="mb-5">
+      <div className="mb-4 pb-3 border-b border-zinc-300">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-brand-900">הגדרות חומרים</h1>
-            <p className="text-sm text-slate-500 mt-1">כמויות + תמחור לכל 100 מ"ל / מ"ר</p>
+            <h1 className="text-lg font-bold text-zinc-900 uppercase tracking-tight">הגדרות חומרים</h1>
+            <p className="text-xs text-zinc-500 mt-0.5 font-mono">כמויות + תמחור לכל 100 מ"ל / מ"ר</p>
           </div>
           {saved && (
-            <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1.5 rounded-full shrink-0">
+            <span className="bg-green-700 text-white text-xs font-semibold px-3 py-1 rounded uppercase tracking-wide shrink-0">
               ✓ נשמר
             </span>
           )}
@@ -344,9 +344,11 @@ export default function Admin() {
 
         {/* Pricing status banner */}
         {pricedCount < materials.length && (
-          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-2">
-            <span className="text-amber-500 text-lg">⚠️</span>
-            <p className="text-xs text-amber-700">
+          <div className="mt-3 bg-amber-50 border border-amber-300 rounded-md px-3 py-2.5 flex items-center gap-2">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-600 shrink-0">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <p className="text-xs text-amber-800 font-mono">
               {materials.length - pricedCount} חומרים ללא מחיר עלות — הצעת המחיר תהיה חלקית
             </p>
           </div>
@@ -368,7 +370,7 @@ export default function Admin() {
           onClick={() => setEditingMat({})}
           className="btn-primary mb-4 flex items-center justify-center gap-2"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
             <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
           </svg>
           הוסף חומר חדש
@@ -376,29 +378,29 @@ export default function Admin() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-2 mb-4">
         {[
           { label: 'פרופילים', count: materials.filter((m) => m.category === 'פרופילים').length },
           { label: 'לוחות',    count: materials.filter((m) => m.category === 'לוחות').length },
           { label: 'ברגים',   count: materials.filter((m) => m.category === 'ברגים').length },
         ].map(({ label, count }) => (
           <div key={label} className="card text-center py-3 px-2">
-            <p className="text-xl font-bold text-brand-800">{count}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+            <p className="text-xl font-bold text-brand-800 font-mono tabular-nums">{count}</p>
+            <p className="text-xs text-zinc-500 mt-0.5 uppercase tracking-wide font-semibold">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Category filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
+      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3">
         {usedCats.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilterCat(cat)}
-            className={`shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+            className={`shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md border uppercase tracking-wide transition-colors ${
               filterCat === cat
-                ? 'bg-brand-700 text-white border-brand-700'
-                : 'bg-white text-slate-600 border-slate-200'
+                ? 'bg-brand-800 text-white border-brand-800'
+                : 'bg-white text-zinc-600 border-zinc-300'
             }`}
           >
             {cat}
@@ -425,25 +427,27 @@ export default function Admin() {
       ))}
 
       {filtered.length === 0 && (
-        <div className="card text-center py-10 text-slate-400">
-          <p className="text-4xl mb-3">📋</p>
-          <p>אין חומרים מוגדרים בקטגוריה זו</p>
+        <div className="card text-center py-10 text-zinc-400 border-dashed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-10 h-10 mx-auto mb-3 text-zinc-300">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <p className="text-sm font-semibold uppercase tracking-wide">אין חומרים בקטגוריה זו</p>
         </div>
       )}
 
       {/* Reset */}
-      <div className="card mt-6 border-red-100">
-        <p className="section-title text-red-400">איפוס</p>
+      <div className="card mt-6 border-red-200">
+        <p className="section-title text-red-400">איפוס מערכת</p>
         {showResetConfirm ? (
           <div>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-xs text-zinc-600 mb-4 font-mono">
               פעולה זו תאפס את כל הגדרות החומרים לברירות המחדל. לא ניתן לשחזר שינויים קודמים.
             </p>
             <div className="flex gap-3">
-              <button onClick={handleReset} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-semibold text-sm">
+              <button onClick={handleReset} className="flex-1 py-2.5 rounded-md bg-red-600 text-white font-semibold text-xs uppercase tracking-wide">
                 אפס הכל
               </button>
-              <button onClick={() => setShowResetConfirm(false)} className="btn-secondary flex-1 py-3">
+              <button onClick={() => setShowResetConfirm(false)} className="btn-secondary flex-1 py-2.5">
                 ביטול
               </button>
             </div>
@@ -451,7 +455,7 @@ export default function Admin() {
         ) : (
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="w-full py-3 rounded-xl border-2 border-red-200 text-red-500 font-medium text-sm hover:bg-red-50 transition-colors"
+            className="w-full py-2.5 rounded-md border-2 border-red-200 text-red-500 font-semibold text-xs uppercase tracking-wide hover:bg-red-50 transition-colors"
           >
             חזור לברירות מחדל
           </button>
