@@ -62,8 +62,16 @@ export default function CNCSpec() {
     );
   }
 
-  const { projectName, length, height, numDoors, doorWidth, doorHeight, doubleSided } = saved;
-  const spec = generateCNCSpec({ length, height, numDoors: numDoors ?? 0, doorWidth: doorWidth ?? 0.9, doorHeight: doorHeight ?? 2.1, doubleSided: doubleSided ?? false });
+  const {
+    projectName,
+    length,
+    height,
+    numDoors = 0,
+    doorWidth = 0.9,
+    doorHeight = 2.1,
+    doubleSided = false,
+  } = saved;
+  const spec = generateCNCSpec({ length, height, numDoors, doorWidth, doorHeight, doubleSided });
   const today = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (

@@ -208,7 +208,7 @@ export function generateCNCSpec({ length, height, numDoors, doorWidth, doorHeigh
 
   const Lmm = Math.round(length * 1000);
   const Hmm = Math.round(height * 1000);
-  const studCutMm = Hmm - 10; // 10 mm clearance at bottom
+  const studCutMm = Hmm - 10; // 10 mm bottom clearance (industry standard for moisture/movement tolerance)
 
   // --- Profile cuts ---
   const totalStudPositions = Math.ceil(length / STUD_SPACING) + 1;
@@ -252,7 +252,7 @@ export function generateCNCSpec({ length, height, numDoors, doorWidth, doorHeigh
           },
           {
             label: 'פרופיל משקוף (UA/UW)',
-            cutMm: Math.round(doorWidth * 1000) + 120, // 60 mm flange each side
+            cutMm: Math.round(doorWidth * 1000) + 120, // adds 60 mm flange per side (120 mm total)
             qty: numDoors,
             note: 'רוחב פתח + 60 מ"מ פלנג׳ לכל צד',
           },
