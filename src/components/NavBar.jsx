@@ -42,7 +42,7 @@ export default function NavBar() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `${base} ${isActive ? 'text-amber-400 border-t-2 border-amber-400 -mt-px' : 'text-zinc-500 border-t-2 border-transparent -mt-px'}`
+              `${base} border-t-2 -mt-px ${isActive ? 'text-amber-400 border-amber-400' : 'text-zinc-500 border-transparent'}`
             }
           >
             {({ isActive }) => (
