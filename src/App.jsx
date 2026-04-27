@@ -3,6 +3,7 @@ import NavBar from './components/NavBar';
 import Calculator from './pages/Calculator';
 import Admin from './pages/Admin';
 import Quote from './pages/Quote';
+import CNCSpec from './pages/CNCSpec';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Calculator />} />
             <Route path="/quote" element={<Quote />} />
+            <Route path="/cnc" element={<CNCSpec />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>

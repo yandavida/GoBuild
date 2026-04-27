@@ -199,3 +199,94 @@ export const CATEGORIES = ['פרופילים', 'לוחות', 'ברגים', 'גי
 export const UNITS = ['מ"ל', 'מ"ר', 'יחידות', 'לוחות', 'ברגים', 'ק"ג', 'גליל', 'שקית'];
 
 export const VAT_RATE = 0.18;
+
+// Generate a precise CNC cutting specification for a partition
+export function generateCNCSpec({ length, height, numDoors, doorWidth, doorHeight, doubleSided }) {
+  const STUD_SPACING = 0.6; // 60 cm on center
+  const BOARD_W = 1.2; // standard board width in meters
+  const BOARD_H = 2.6; // standard board height in meters
+
+  const Lmm = Math.round(length * 1000);
+  const Hmm = Math.round(height * 1000);
+  const studCutMm = Hmm - 10; // 10 mm clearance at bottom
+
+  // --- Profile cuts ---
+  const totalStudPositions = Math.ceil(length / STUD_SPACING) + 1;
+  // Each door opening removes 2 regular studs (replaced by king + jack studs)
+  const regularStuds = Math.max(0, totalStudPositions - numDoors * 2);
+
+  const profiles = [
+    {
+      label: 'ראנר עליון (UW)',
+      cutMm: Lmm,
+      qty: 1,
+      note: 'מסילה עליונה – אורך מלא',
+    },
+    {
+      label: 'ראנר תחתון (UW)',
+      cutMm: Lmm,
+      qty: 1,
+      note: numDoors > 0
+        ? `עם פתח/ים לדלת: ${numDoors} × ${Math.round(doorWidth * 1000)} מ"מ`
+        : 'מסילה תחתונה – אורך מלא',
+    },
+    {
+      label: 'סטאד אנכי (CW)',
+      cutMm: studCutMm,
+      qty: regularStuds,
+      note: `גובה קיר פחות 10 מ"מ פינוי | ריווח ${STUD_SPACING * 100} ס"מ`,
+    },
+    ...(numDoors > 0
+      ? [
+          {
+            label: 'סטאד קינג – דלת (CW)',
+            cutMm: studCutMm,
+            qty: numDoors * 2,
+            note: `גובה מלא, ${numDoors} × 2 עמודות דפנות דלת`,
+          },
+          {
+            label: 'סטאד ג׳ק – דלת (CW)',
+            cutMm: Math.round(doorHeight * 1000),
+            qty: numDoors * 2,
+            note: 'גובה פתח דלת, תמיכה למשקוף',
+          },
+          {
+            label: 'פרופיל משקוף (UA/UW)',
+            cutMm: Math.round(doorWidth * 1000) + 120, // 60 mm flange each side
+            qty: numDoors,
+            note: 'רוחב פתח + 60 מ"מ פלנג׳ לכל צד',
+          },
+        ]
+      : []),
+  ];
+
+  // --- Board cutting plan ---
+  const sides = doubleSided ? 2 : 1;
+  const nFullCols = Math.floor(length / BOARD_W);
+  const lastColWmm = Math.round((length - nFullCols * BOARD_W) * 1000);
+  const nFullRows = Math.floor(height / BOARD_H);
+  const lastRowHmm = Math.round((height - nFullRows * BOARD_H) * 1000);
+
+  const boardCuts = [];
+
+  const fullBoardQty = nFullCols * nFullRows * sides;
+  if (fullBoardQty > 0) {
+    boardCuts.push({ widthMm: 1200, heightMm: 2600, qty: fullBoardQty, note: 'לוח שלם – ללא חיתוך' });
+  }
+  if (lastRowHmm > 10) {
+    const q = nFullCols * sides;
+    if (q > 0) boardCuts.push({ widthMm: 1200, heightMm: lastRowHmm, qty: q, note: 'חיתוך גובה' });
+  }
+  if (lastColWmm > 10) {
+    const q = nFullRows * sides;
+    if (q > 0) boardCuts.push({ widthMm: lastColWmm, heightMm: 2600, qty: q, note: 'חיתוך רוחב (קצה)' });
+  }
+  if (lastColWmm > 10 && lastRowHmm > 10) {
+    boardCuts.push({ widthMm: lastColWmm, heightMm: lastRowHmm, qty: 1 * sides, note: 'חיתוך פינה' });
+  }
+
+  const totalBoards = boardCuts.reduce((s, b) => s + b.qty, 0);
+  const totalProfilePieces = profiles.reduce((s, p) => s + p.qty, 0);
+
+  return { profiles, boards: { cuts: boardCuts, totalBoards, sides }, totalProfilePieces };
+}
